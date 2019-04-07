@@ -1,2 +1,7 @@
 当需要在XML文件中引用资源对象时，必须使用@符号，紧跟着@符号的是资源对象的类型，然后是资源对象的名称，比如@string/edit_message。（资源对象是与 APP 资源（如：位图、布局文件、字符串）关联的唯一整数）。
 当第一次定义一个资源对象时，需要在@符号之后添加加号，比如@+id/edit_message，加号是用于告诉SDK此资源ID需要创建。
+如果当前的Activity实例不仅仅是进入暂停状态，而是会继续进入停止状态，那么就应该把一些负载重的任务（如write DB）放到onStop()方法中执行，避免Activity之间的切换变得缓慢！
+当前的Activity实例需要进入停止状态时，需要注意的是，必须在onStop()方法中进行资源的释放，否则可能会引起内存泄漏（因为Activity在停止状态起见，系统一旦需要内存空间，就会直接将处于停止状态的Activity进行销毁，极端情况下，系统会不调用onDestroy()方法直接杀死Activity）。
+理解Activity的生命周期状态，有利于彻底理解在每个生命周期的回调方法中执行对应的操作！如在onStop()方法中执行释放资源的操作，比在onPause()方法中执行的效果好；再比如在onStart()方法中执行初始化资源，要比在onRestart方法中执行的效果好，因为onStart()方法是Activity创建和从停止状态恢复的状态变化流程中共有的回调方法！
+由于在onDestroy()方法之前调用的onStop()方法已经对资源进行了充分释放，因此，在onDestroy()方法中只需要进一步对相关的后台线程进行销毁即可保证应用的彻底退出！
+onSaveInstanceState() 用于保存入栈的Activity所需保存的信息到Bundle对象中，onCreate() 与 onRestoreInstanceState()通过接收到的Bundle对象用于恢复状态信息！
